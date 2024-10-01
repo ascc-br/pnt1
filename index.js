@@ -1,7 +1,7 @@
 var require = require("readline-sync");
 
 class Quarto {
-  constructor (numero, tipo, diaria) {
+  constructor(numero, tipo, diaria) {
     this.id = numero; //ID primaria
     this.tipo = tipo; //solteiro, duplo, suite
     this.diaria = diaria;
@@ -9,26 +9,26 @@ class Quarto {
 }
 
 class ManipulaQuartos {
-  constructor () {
+  constructor() {
     this.listaQuartos = []; //vetor com lista de quartos
   }
 
   //retorna 'true' se o quarto for adicionado com sucesso, 'false' caso contrário
-  addQuarto(tipo) { 
-  var diaria = 0;
+  addQuarto(tipo) {
+    var diaria = 0;
 
-  switch (tipo) {
-      case 'solteiro':
+    switch (tipo) {
+      case "solteiro":
         diaria = 100;
         break;
-      case 'duplo':
+      case "duplo":
         diaria = 150;
         break;
-      case 'suite':
+      case "suite":
         diaria = 200;
         break;
       default:
-        console.erro('Tipo de quarto inválido');
+        console.erro("Tipo de quarto inválido");
         return false;
     }
 
@@ -39,7 +39,7 @@ class ManipulaQuartos {
 }
 
 class Hospede {
-  constructor (nome, endereco, telefone, cpf) {
+  constructor(nome, endereco, telefone, cpf) {
     this.nome = nome;
     this.endereco = endereco;
     this.telefone = telefone;
@@ -48,25 +48,21 @@ class Hospede {
 }
 
 class Reserva {
-  constructor (dataInicial, dataFinal, quarto, hospede) {
+  constructor(dataInicial, dataFinal, quarto, hospede) {
     this.dataInicial = dataInicial;
     this.dataFinal = dataFinal;
     this.quarto = quarto; //id estrangeira
-    this.hospede = hospede;  //id estrangeira
+    this.hospede = hospede; //id estrangeira
     this.idReserva = 0; //funcao baseada na data + id do quarto + id do hospede
   }
 }
 
-
-
-
-const { error } = require("console");
 /** INTERFACE GRAFICA (FRONT) */
 var loop1 = true;
 
-const gerQuartos = new ManipulaQuartos;
+const gerQuartos = new ManipulaQuartos();
 while (loop1) {
-
+  console.clear();
   console.log("                 _ _.-'`-._ _");
   console.log("                ;.'________'.;");
   console.log("     _________n.[____________].n_________");
@@ -87,25 +83,46 @@ while (loop1) {
   console.log("6. sair");
   var opcaoEscolhida = require.question("Escolha a opcao desejada: ");
 
-  if (opcaoEscolhida == 1) {
-    console.log(" =Cadastro de quartos= ");
-    console.log("Selecione o tipo de quarto: ");
-    console.log("1. Solteiro ");
-    console.log("2. Duplo ");
-    console.log("3. Suite ");
-    opcaoEscolhida = require.question("Escolha a opcao desejada: ");
+  switch (opcaoEscolhida) {
+    case "1":
+      console.clear();
+      console.log(" =Cadastro de quartos= ");
+      console.log("Selecione o tipo de quarto: ");
+      console.log("1. Solteiro ");
+      console.log("2. Duplo ");
+      console.log("3. Suite ");
+      opcaoEscolhida = require.question("Escolha a opcao desejada: ");
 
-    if (opcaoEscolhida == 1) {
-      console.log("Quarto solteiro selecionado");
-      gerQuartos.addQuarto('solteiro');
-    }
-  } else if (opcaoEscolhida == 6){ //else do primeiro menu
-    console.log("SAINDO...");
-    loop1 = false;
-  } else { //else do primeiro menu
-    console.log("opcao indisponivel");
-  }
-
-  console.clear();
-}
-
+      switch (opcaoEscolhida) {
+        case "1":
+          console.log("Quarto solteiro selecionado");
+          gerQuartos.addQuarto("solteiro");
+          break;
+        case "2":
+          console.log("Quarto duplo selecionado");
+          gerQuartos.addQuarto("duplo");
+          break;
+        case "3":
+          console.log("Quarto suite selecionado");
+          gerQuartos.addQuarto("suite");
+          break;
+        default:
+          console.error("Tipo de quarto invalido!");
+          require.question("Pressione Enter para voltar ao Menu Principal...", () => {
+            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+            require.close();
+          });
+      } //fim do menu 'cadastro de quartos'
+      break;
+    case "6":
+      console.log("SAINDO...");
+      loop1 = false;
+      break;
+    default:
+      console.error("OPCAO INDISPONIVEL!!!");
+      require.question("Pressione Enter para continuar...", () => {
+        // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+        require.close();
+      });
+  } //fim do menu 'principal'
+} //fim do while principal
