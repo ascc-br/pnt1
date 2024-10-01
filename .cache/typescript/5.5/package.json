@@ -1,1 +1,1 @@
-{"private":true,"dependencies":{"types-registry":"^0.1.687"},"devDependencies":{"@types/readline-sync":"^1.4.8"}}
+{"private":true,"dependencies":{"types-registry":"^0.1.688"},"devDependencies":{"@types/node":"^22.7.4","@types/readline-sync":"^1.4.8"}}
