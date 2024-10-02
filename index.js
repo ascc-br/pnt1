@@ -36,6 +36,30 @@ class ManipulaQuartos {
     this.listaQuartos.push(quarto); //insere o quarto na lista de quartos
     return true;
   }
+
+  contarQuartos() {
+    var contagemSolteiro = 0;
+    var contagemDuplo = 0;
+    var contagemSuite = 0;
+
+    this.listaQuartos.forEach(quarto => {
+      if (quarto.tipo === "solteiro") {
+        contagemSolteiro++;
+      }
+    });
+    this.listaQuartos.forEach(quarto => {
+      if (quarto.tipo === "duplo") {
+        contagemDuplo++;
+      }
+    });
+    this.listaQuartos.forEach(quarto => {
+      if (quarto.tipo === "suite") {
+        contagemSuite++;
+      }
+    });
+
+    return [contagemSolteiro, contagemDuplo, contagemSuite]; //retorna vetor com as 3 contagens
+  }
 }
 
 class Hospede {
@@ -54,6 +78,46 @@ class Reserva {
     this.quarto = quarto; //id estrangeira
     this.hospede = hospede; //id estrangeira
     this.idReserva = 0; //funcao baseada na data + id do quarto + id do hospede
+  }
+}
+
+class ManipulaReservas {
+  constructor () {
+    this.listaUsuarios = []; //vetor com lista de usuarios
+    this.listaReservas = []; //vetor com lista de reservas
+  }
+
+  //retorna 'true' se o usuario for adicionado com sucesso, 'false' caso contrario
+  criaUsuario(nome, endereco, telefone, cpf) {
+    if (this.listaUsuarios.find(usuario => usuario.cpf === cpf))
+      return false;
+    else {
+    const usuario = new Hospede(nome, endereco, telefone, cpf);
+    this.listaUsuarios.push(usuario);
+    return true;
+    }
+    return false;
+  }
+
+  //ajeitar essa função
+  checaDisponibilidade (dataInicial, dataFinal, quarto) {
+    var disponivel = true;
+    for (var i = 0; i < this.listaReservas.length; i++) {
+      if (this.listaReservas[i].quarto === quarto) {
+        if (this.listaReservas[i].dataInicial <= dataInicial && this.listaReservas[i].dataFinal >= dataFinal) {
+          disponivel = false;
+        }
+      }
+    }
+    return disponivel;
+  }
+
+  //ajeitar essa função
+  //retorna 'true' se a reserva for adicionada com sucesso, 'false' caso contrario
+  criaReserva(dataInicial, dataFinal, quarto, hospede) {
+    const reserva = new Reserva(dataInicial, dataFinal, quarto, hospede);
+    this.listaReservas.push(reserva);
+    return true;
   }
 }
 
@@ -113,6 +177,43 @@ while (loop1) {
             require.close();
           });
       } //fim do menu 'cadastro de quartos'
+      break;
+    case "2":
+      if(gerQuartos.listaQuartos.length == 0) {
+        console.error("Nao eh possivel cadastrar hospedes sem quartos cadastrados!");
+        require.question("Pressione Enter para continuar...", () => {
+          // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+          require.close();
+        });
+      } else {
+        // console.clear();
+        // console.log(" =Cadastro de hospedes= ");
+        // console.log("Informe os dados do hospede: ");
+        // var nome = require.question("Nome: ");
+        // var endereco = require.question("Endereco: ");
+        // var telefone = require.question("Telefone: ");
+        // var cpf = require.question("CPF: ");
+
+        // var hospede = new Hospede(nome, endereco, telefone, cpf);
+        console.log("Hospede cadastrado com sucesso!");
+        require.question("Pressione Enter para continuar...", () => {
+          // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+          require.close();
+        });
+      }
+      
+      break;
+    case "4":
+      var contagem = gerQuartos.contarQuartos();
+      console.clear();
+      console.log(" =Quartos cadastrados= ");
+      console.log("Quartos solteiro: " + contagem[0]);
+      console.log("Quartos duplo:    " + contagem[1]);
+        console.log("Quartos suite:    " + contagem[2] + '\n');
+      require.question("Pressione Enter para voltar ao Menu Principal...", () => {
+        // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+        require.close();
+      });
       break;
     case "6":
       console.log("SAINDO...");
