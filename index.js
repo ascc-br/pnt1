@@ -91,9 +91,9 @@ while (loop1) {
           dataIniInput = readline.question("Data de entrada DD/MM/AAAA: ");
           if (!isValidAndFuture(dataIniInput, hoje))
             console.error(
-              "Data invalida! Favor insira data no formato DD/MM/AAAA. \nData minima: " +
+              "Data invalida! Favor insira data posterior a: \n" +
                 hoje.toDateString() +
-                "\n"
+                " e no formato DD/MM/AAAA.\n"
             );
         }
 
@@ -109,13 +109,13 @@ while (loop1) {
         }
         let dataFinal = new Date(dateIso(dataFinInput) + "T15:00:00Z"); //15h UTC == 12h GMT-3 (checkout)
 
-        var quartosDisponiveis = gerReservas.listarQuartosDisponiveis(
+        let quartosDisponiveis = gerReservas.listarQuartosDisponiveis(
           dataInicial,
           dataFinal,
           gerQuartos.listaQuartos
         );
 
-        if (quartosDisponiveis == null) {
+        if (quartosDisponiveis.length < 1) {
           console.error("Nao ha quartos disponiveis nessa data!");
           readline.question("Pressione Enter para voltar ao menu principal...", () => {
             // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
@@ -232,15 +232,15 @@ while (loop1) {
 
             switch (opcaoEscolhida) {
               case "1":
-                console.log("Quarto solteiro selecionado");
+                console.log("Quarto solteiro cadastrado!");
                 gerQuartos.addQuarto("solteiro", andar);
                 break;
               case "2":
-                console.log("Quarto duplo selecionado");
+                console.log("Quarto duplo cadastrado!");
                 gerQuartos.addQuarto("duplo", andar);
                 break;
               case "3":
-                console.log("Quarto suite selecionado");
+                console.log("Quarto suite cadastrado!");
                 gerQuartos.addQuarto("suite", andar);
                 break;
               default:

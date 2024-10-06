@@ -139,8 +139,8 @@ function dateIso(date) {
 }
 
 function dataProxReserva(data) {
-  let dia = data.getUTCHours() <= 3 ? data.getUTCDate() - 1 : data.getUTCDate();
-  return new Date(Date.UTC(data.getUTCFullYear(), data.getUTCMonth(), dia, 0, 0, 0));
+  let dia = data.getUTCHours() <= 15 ? data.getUTCDate() - 1 : data.getUTCDate(); //15h UTC == 12GMT-3 (checkout time)
+  return new Date(Date.UTC(data.getUTCFullYear(), data.getUTCMonth(), dia - 1, 23, 59, 59));
 }
 
 // Exporting the classes and functions to be used in index.js
