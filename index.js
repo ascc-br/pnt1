@@ -37,7 +37,7 @@ class ManipulaQuartos {
     }
 
     const quarto = new Quarto(
-      this.listaQuartos.length * 100 + this.listaQuartos[andar - 1].length + 1,
+      (andar - 1) * 100 + this.listaQuartos[andar - 1].length + 1,
       tipo,
       diaria
     ); //cria um novo quarto
@@ -79,9 +79,13 @@ class Reserva {
     this.dataFinal = dataFinal;
     this.idQuarto = idQuarto; //id estrangeira
     this.idHospede = cpfHospede; //id estrangeira
-    this.idReserva =
-      dataInicial.toString + //funcao baseada na data + id do quarto
-      quarto.toString.padStart(4, "0"); //garante que a string tenha no mínimo 6 caracteres, preenchendo com zeros '0' à esquerda, se necessário.
+    this.idReserva = this.idGenerator(dataInicial, idQuarto);
+  }
+
+  //Função pra gerar uma id unica da reserva baseada na data inicial e no numeor do quarto
+  idGenerator(dataInicial, quarto) {
+    let [dd, mm, aa] = dataInicial.toLocaleDateString().split("/");
+    return aa + mm + dd + quarto.toString().padStart(4, "0");
   }
 }
 
@@ -102,7 +106,6 @@ class ManipulaReservas {
     return false;
   }
 
-  //ajeitar essa função
   checaDisponibilidade(dataInicial, dataFinal, quarto) {
     var disponivel = true;
     for (var i = 0; i < this.listaReservas.length; i++) {
@@ -118,20 +121,22 @@ class ManipulaReservas {
     return disponivel;
   }
 
-  quartosDisponiveis(dataInicial, dataFinal) {
-    var quartosDisponiveis = [];
+  listarQuartosDisponiveis(dataInicial, dataFinal, listaDeQuartos) {
+    var vetorQuartosDisponiveis = [];
 
     // Percorre cada andar
-    this.listaQuartos.forEach((andar) => {
-      // Percorre cada quarto dentro do andar
-      andar.forEach((quarto) => {
-        if (this.checaDisponibilidade(dataInicial, dataFinal, quarto.id)) {
-          quartosDisponiveis.push(quarto);
-        }
+    if (listaDeQuartos != undefined) {
+      listaDeQuartos.forEach((andar) => {
+        // Percorre cada quarto dentro do andar
+        andar.forEach((quarto) => {
+          if (this.checaDisponibilidade(dataInicial, dataFinal, quarto.id)) {
+            vetorQuartosDisponiveis.push(quarto);
+          }
+        });
       });
-    });
-
-    return quartosDisponiveis;
+      console.log(vetorQuartosDisponiveis);
+      return vetorQuartosDisponiveis;
+    } else return null;
   }
 
   //retorna 'true' se a reserva for adicionada com sucesso, 'false' caso contrario
@@ -145,6 +150,35 @@ class ManipulaReservas {
     }
   }
 }
+
+// FUNÇÕES DO FRONT
+function isValidAndFuture(stringData, today) {
+  let dateParts = stringData.split("/");
+
+  // Ensure the input has 3 parts (DD/MM/YYYY)
+  if (dateParts.length !== 3) {
+    return false; // If input doesn't have exactly 3 parts, it's invalid
+  }
+
+  let [dia, mes, ano] = dateParts;
+
+  // Create the date object (YYYY-MM-DD format)
+  let dateObj = new Date(`${ano}-${mes}-${dia}`);
+
+  // Check if the date is valid and in the future
+  return dateObj instanceof Date && !isNaN(dateObj.getTime()) && dateObj > today;
+}
+
+function dateIso(date) {
+  let [dia, mes, ano] = date.split("/");
+
+  // Pad dia and mes with '0' if they are a single digit
+  dia = dia.padStart(2, "0");
+  mes = mes.padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
+}
+
 /** INTERFACE GRAFICA (FRONT) */
 
 console.clear();
@@ -161,7 +195,7 @@ console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n");
 
 var lacoAndares = true;
 while (lacoAndares) {
-  var auxAndares = require.question("Quantos pisos tem o hotel? (contando com o terreo)");
+  var auxAndares = require.question("Quantos pisos tem o hotel? (contando com o terreo):\n");
   if (auxAndares < 1 || isNaN(auxAndares)) {
     console.error("Digite um valor valido!");
   } else lacoAndares = false;
@@ -190,7 +224,7 @@ while (loop1) {
    *  1.1 Quartos disponíveis na data (quantidade por tipo e ids)
    *  1.2 Reservar quarto em data (usando CPF e cadastrando caso novo hospede)
    * 2. Registros do Sistema
-   *  2.1 Listar quartos
+   *  2.1 Listar quartos cadastrados
    *  2.2 Listar hospedes cadastrados
    *  2.3 Listar reservas
    * 3. Alterar Registros
@@ -208,38 +242,115 @@ while (loop1) {
   var opcaoEscolhida = require.question("Escolha a opcao desejada: ");
 
   switch (opcaoEscolhida) {
-    /** case "1":
-      if (gerQuartos.listaQuartos.length == 0) {
+    case "1":
+      let [solteiro, duplo, suite] = gerQuartos.contarQuartos();
+      if (solteiro + duplo + suite == 0) {
         console.error("Nao eh possivel criar reservas sem quartos cadastrados!");
         require.question("Pressione Enter para continuar...", () => {
           // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
           require.close();
         });
       } else {
-        var diaInicial = require.questionInt("Informe o dia inicial")
         console.clear();
-        console.log(" =Fazer Reserva= ");
-        console.log("1. Quartos disponiveis na data");
-        // console.log("Informe os dados do hospede: ");
-        var cpf = require.question("CPF: ");
-        if (gerReservas.listaUsuarios.find((usuario) => usuario.cpf === cpf))
-          console.log("Hospede já cadastrado no sistema!");
-        else {
-          var nome = require.question("Nome: ");
-          var endereco = require.question("Endereco: ");
-          var telefone = require.question("Telefone: ");
-          var msgErro = gerReservas.criaUsuario(nome, endereco, telefone, cpf);
-          if (msgErro) console.log("Hospede cadastrado com sucesso!");
-          else console.log("CPF já cadastrado no sistema!");
+        console.log(" =Fazer Reservaa= ");
+        let dataIniInput = "DD/MM/AAAA";
+        let dataFinInput = "DD/MM/AAAA";
+        let hoje = new Date();
+        while (!isValidAndFuture(dataIniInput, hoje)) {
+          dataIniInput = require.question("Data de entrada DD/MM/AAAA: ");
+          if (!isValidAndFuture(dataIniInput, hoje))
+            console.error(
+              "Data invalida! Favor insira data posterior a:\n" + hoje + "\ne no formato DD/MM/AAAA"
+            );
         }
-        require.question("Pressione Enter para continuar...", () => {
-          // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-          require.close();
-        });
-      }
 
+        let dataInicial = new Date(dateIso(dataIniInput) + "T14:00:00");
+        while (!isValidAndFuture(dataFinInput, dataInicial)) {
+          dataFinInput = require.question("Data de saida DD/MM/AAAA: ");
+          if (!isValidAndFuture(dataFinInput, dataInicial))
+            console.error(
+              "Data invalida! Favor insira data posterior a:\n" +
+                dataInicial +
+                "\ne no formato DD/MM/AAAA"
+            );
+        }
+        let dataFinal = new Date(dateIso(dataFinInput) + "T10:00:00");
+
+        var quartosDisponiveis = gerReservas.listarQuartosDisponiveis(
+          dataInicial,
+          dataFinal,
+          gerQuartos.listaQuartos
+        );
+
+        if (quartosDisponiveis == null) {
+          console.error("Nao ha quartos disponiveis nessa data!");
+          require.question("Pressione Enter para voltar ao menu principal...", () => {
+            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+            require.close();
+          });
+        } else {
+          let lacoReserva = true;
+          while (lacoReserva) {
+            console.clear();
+            console.log(" =Fazer Reserva (" + dataIniInput + " ~ " + dataFinInput + ")");
+            console.log("1. Quartos disponiveis na data");
+            console.log("2. Reservar quarto na data");
+            console.log("3. Voltar ao Menu principal");
+            var opcaoReserva = require.question("Escolha a opcao desejada: ");
+
+            switch (opcaoReserva) {
+              case "1":
+                console.clear();
+                console.log(" =Quartos disponiveis (" + dataIniInput + " ~ " + dataFinInput + ")");
+                console.log("Quartos disponiveis:");
+                quartosDisponiveis.forEach((quarto) => {
+                  console.log(" #" + quarto.id + " (" + quarto.tipo + ")");
+                });
+                require.question("Pressione Enter para continuar...", () => {
+                  // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+                  require.close();
+                });
+                break;
+              case "2":
+                console.log("Informe os dados do hospede: ");
+                var cpf = require.question("CPF: ");
+                if (gerReservas.listaUsuarios.find((usuario) => usuario.cpf === cpf))
+                  console.log("Hospede já cadastrado no sistema!");
+                else {
+                  var nome = require.question("Nome: ");
+                  var endereco = require.question("Endereco: ");
+                  var telefone = require.question("Telefone: ");
+                  var msgErro = gerReservas.criaUsuario(nome, endereco, telefone, cpf);
+                  if (msgErro) console.log("Hospede cadastrado com sucesso!");
+                  else console.log("CPF já cadastrado no sistema!");
+                }
+                var quartoEscolhido = require.questionInt("Numero do quarto: ");
+                if (quartosDisponiveis.find((quarto) => quarto.id === quartoEscolhido)) {
+                  if (gerReservas.criaReserva(dataInicial, dataFinal, quartoEscolhido, cpf)) {
+                    console.log("Reserva realizada com sucesso!");
+                    lacoReserva = false;
+                  } else console.error("A reserva nao foi efetuada!");
+                } else console.error("Quarto indisponivel!");
+                require.question("Pressione Enter para continuar...", () => {
+                  // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+                  require.close();
+                });
+                break;
+              case "3":
+                lacoReserva = false;
+                break;
+              default:
+                console.error("Opcao invalida!");
+                require.question("Pressione Enter para continuar...", () => {
+                  // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+                  require.close();
+                });
+                break;
+            } //fim do switch
+          } //fim do laço
+        } //fim do else o qual há quartos disponíveis
+      } //fim do else o qual acontece o case '1'
       break;
-      */
     case "2":
       console.clear();
       console.log(" =Registros do Sistema= ");
@@ -249,9 +360,15 @@ while (loop1) {
       var contagem = gerQuartos.contarQuartos();
       console.clear();
       console.log(" =Quartos cadastrados= ");
-      console.log("Quartos solteiro: " + contagem[0]);
-      console.log("Quartos duplo:    " + contagem[1]);
-      console.log("Quartos suite:    " + contagem[2] + "\n");
+      console.log(gerQuartos.listaQuartos);
+      console.log(" =Hospedes cadastrados= ");
+      console.log(gerReservas.listaUsuarios);
+      console.log(" =Reservas cadastradas= ");
+      console.log(gerReservas.listaReservas);
+      // console.log(" =Quartos cadastrados= ");
+      // console.log("Quartos solteiro: " + contagem[0]);
+      // console.log("Quartos duplo:    " + contagem[1]);
+      // console.log("Quartos suite:    " + contagem[2] + "\n");
       require.question("Pressione Enter para voltar ao Menu Principal...", () => {
         // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
         require.close();
