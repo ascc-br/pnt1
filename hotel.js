@@ -2,7 +2,7 @@
 class Quarto {
   constructor(numero, tipo, diaria) {
     this.id = numero; // ID primaria
-    this.tipo = tipo; // solteiro, duplo, suite
+    this.tipo = tipo; // solteiro, duplo, suite, desativado.
     this.diaria = diaria;
   }
 }
@@ -65,7 +65,7 @@ class Hospede {
     this.nome = nome;
     this.endereco = endereco;
     this.telefone = telefone;
-    this.cpf = cpf; // id primaria
+    this.id = cpf; // id primaria
   }
 }
 
@@ -75,12 +75,12 @@ class Reserva {
     this.dataFinal = dataFinal;
     this.idQuarto = idQuarto; // id estrangeira
     this.idHospede = cpfHospede; // id estrangeira
-    this.idReserva = this.idGenerator(dataInicial, idQuarto);
+    this.id = this.idGenerator(dataInicial, idQuarto);
   }
 
   idGenerator(dataInicial, quarto) {
-    let [dd, mm, aa] = dataInicial.toLocaleDateString().split("/");
-    return aa + mm + dd + quarto.toString().padStart(4, "0");
+    let [dd, mm, aaaa] = dataInicial.toLocaleDateString().split("/");
+    return parseInt(aaaa + mm + dd + quarto.toString().padStart(4, "0"));
   }
 }
 
@@ -95,6 +95,19 @@ class ManipulaReservas {
     const usuario = new Hospede(nome, endereco, telefone, cpf);
     this.listaUsuarios.push(usuario);
     return true;
+  }
+
+  removeUsuario(id) {
+    // Encontra o índice do objeto com o id fornecido
+    const index = this.listaUsuarios.findIndex((obj) => obj.id === id);
+
+    // Se o índice for encontrado, remove o objeto do array
+    if (index !== -1) {
+      this.listaUsuarios.splice(index, 1); // Remove 1 item na posição index
+      return true; // Retorna true se o objeto foi removido com sucesso
+    } else {
+      return false; // Retorna false se o objeto não foi encontrado
+    }
   }
 
   checaDisponibilidade(dataInicial, dataFinal, quarto) {
@@ -117,6 +130,19 @@ class ManipulaReservas {
     const reserva = new Reserva(dataInicial, dataFinal, quarto, hospede);
     this.listaReservas.push(reserva);
     return true;
+  }
+
+  removeReserva(id) {
+    // Encontra o índice do objeto com o id fornecido
+    const index = this.listaReservas.findIndex((obj) => obj.id === id);
+
+    // Se o índice for encontrado, remove o objeto do array
+    if (index !== -1) {
+      this.listaReservas.splice(index, 1); // Remove 1 item na posição index
+      return true; // Retorna true se o objeto foi removido com sucesso
+    } else {
+      return false; // Retorna false se o objeto não foi encontrado
+    }
   }
 }
 

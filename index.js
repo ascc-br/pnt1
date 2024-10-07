@@ -50,17 +50,26 @@ while (loop1) {
   console.log(" ,,;;,;;;,;;;,;;;,;;;,;;;,;;;,;;,;;;,;;;,;;,,");
   console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n");
 
-  /** Hierarquia de Menus:
+  /** Mapa de Menus:
    * 1. Fazer Reserva
-   *  1.1 Quartos disponíveis na data (quantidade por tipo e ids)
+   *  1.1 Quartos disponíveis na data
    *  1.2 Reservar quarto em data (usando CPF e cadastrando caso novo hospede)
+   *  1.3 Voltar ao menu principal
    * 2. Registros do Sistema
-   *  2.1 Listar quartos cadastrados
-   *  2.2 Listar hospedes cadastrados
-   *  2.3 Listar reservas
+   *  2.1 Listar reservas por CPF
+   *  2.2 Listar quartos cadastrados
+   *  2.3 Listar hospedes cadastrados
+   *  2.4 Listar reservas cadastradas
    * 3. Alterar Registros
    *  3.1 Cadastrar novo quarto
-   *  3.2 Deletar registro de quarto
+   *   3.1.1 solteiro
+   *   3.1.2 duplo
+   *   3.1.3 suite
+   *  3.2 Alterar registro de quarto
+   *   3.2.1 Solteiro
+   *   3.2.2 duplo
+   *   3.2.3 suite
+   *   3.2.4 DESATIVADO
    *  3.3 Deletar registro de hospede
    *  3.4 Deletar registro de reserva
    * 4. Sair
@@ -146,8 +155,8 @@ while (loop1) {
                 break;
               case "2":
                 console.log("Informe os dados do hospede: ");
-                var cpf = readline.question("CPF: ");
-                if (gerReservas.listaUsuarios.find((usuario) => usuario.cpf === cpf))
+                var cpf = readline.questionInt("CPF: ");
+                if (gerReservas.listaUsuarios.find((usuario) => usuario.id === cpf))
                   console.log("Hospede já cadastrado no sistema!");
                 else {
                   var nome = readline.question("Nome: ");
@@ -252,6 +261,24 @@ while (loop1) {
             readline.close();
           });
           break; //fim do case '1': Cadastrar novo quarto
+        case "3":
+          let aux_cpf = readline.questionInt("Informe o CPF do hospede: ");
+          if (gerReservas.removeUsuario(aux_cpf)) console.log("Hospede removido com sucesso!");
+          else console.error("CPF nao cadastrado!");
+          readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
+            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+            readline.close();
+          });
+          break; //fim do case '3': Remover registro de hospede
+        case "4":
+          let aux_id = readline.questionInt("Informe o ID da reserva: ");
+          if (gerReservas.removeReserva(aux_id)) console.log("Reserva removida com sucesso!");
+          else console.error("ID de reserva nao cadastrado!");
+          readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
+            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+            readline.close();
+          });
+          break; //fim do case '4': Remover registro de reserva
         default:
           console.error("OPCAO INDISPONIVEL!!!");
           readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
