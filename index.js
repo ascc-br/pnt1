@@ -26,7 +26,9 @@ console.log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;\n");
 
 var lacoAndares = true;
 while (lacoAndares) {
-  var auxAndares = readline.question("Quantos pisos tem o hotel? (contando com o terreo):\n");
+  var auxAndares = readline.question(
+    "Quantos pisos tem o hotel? (contando com o terreo):\n",
+  );
   if (auxAndares < 1 || isNaN(auxAndares)) {
     console.error("Digite um valor valido!");
   } else lacoAndares = false;
@@ -85,7 +87,9 @@ while (loop1) {
     case "1":
       let [solteiro, duplo, suite] = gerQuartos.contarQuartos();
       if (solteiro + duplo + suite == 0) {
-        console.error("Nao eh possivel criar reservas sem quartos cadastrados!");
+        console.error(
+          "Nao eh possivel criar reservas sem quartos cadastrados!",
+        );
         readline.question("Pressione Enter para continuar...", () => {
           // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
           readline.close();
@@ -102,7 +106,7 @@ while (loop1) {
             console.error(
               "Data invalida! Favor insira data posterior a: \n" +
                 hoje.toDateString() +
-                " e no formato DD/MM/AAAA.\n"
+                " e no formato DD/MM/AAAA.\n",
             );
         }
 
@@ -113,7 +117,7 @@ while (loop1) {
             console.error(
               "Data invalida! Favor insira data posterior a: \n" +
                 dataInicial.toDateString() +
-                " e no formato DD/MM/AAAA.\n"
+                " e no formato DD/MM/AAAA.\n",
             );
         }
         let dataFinal = new Date(dateIso(dataFinInput) + "T15:00:00Z"); //15h UTC == 12h GMT-3 (checkout)
@@ -121,20 +125,25 @@ while (loop1) {
         let quartosDisponiveis = gerReservas.listarQuartosDisponiveis(
           dataInicial,
           dataFinal,
-          gerQuartos.listaQuartos
+          gerQuartos.listaQuartos,
         );
 
         if (quartosDisponiveis.length < 1) {
           console.error("Nao ha quartos disponiveis nessa data!");
-          readline.question("Pressione Enter para voltar ao menu principal...", () => {
-            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-            readline.close();
-          });
+          readline.question(
+            "Pressione Enter para voltar ao menu principal...",
+            () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            },
+          );
         } else {
           let lacoReserva = true;
           while (lacoReserva) {
             console.clear();
-            console.log(" =Fazer Reserva (" + dataIniInput + " ~ " + dataFinInput + ")=");
+            console.log(
+              " =Fazer Reserva (" + dataIniInput + " ~ " + dataFinInput + ")=",
+            );
             console.log("1. Quartos disponiveis na data");
             console.log("2. Reservar quarto na data");
             console.log("3. Voltar ao Menu Principal");
@@ -143,7 +152,13 @@ while (loop1) {
             switch (opcaoReserva) {
               case "1":
                 console.clear();
-                console.log(" =Quartos disponiveis (" + dataIniInput + " ~ " + dataFinInput + ")");
+                console.log(
+                  " =Quartos disponiveis (" +
+                    dataIniInput +
+                    " ~ " +
+                    dataFinInput +
+                    ")",
+                );
                 console.log("Quartos disponiveis:");
                 quartosDisponiveis.forEach((quarto) => {
                   console.log(" #" + quarto.id + " (" + quarto.tipo + ")");
@@ -156,19 +171,40 @@ while (loop1) {
               case "2":
                 console.log("Informe os dados do hospede: ");
                 var cpf = readline.questionInt("CPF: ");
-                if (gerReservas.listaUsuarios.find((usuario) => usuario.id === cpf))
+                if (
+                  gerReservas.listaUsuarios.find(
+                    (usuario) => usuario.id === cpf,
+                  )
+                )
                   console.log("Hospede já cadastrado no sistema!");
                 else {
                   var nome = readline.question("Nome: ");
                   var endereco = readline.question("Endereco: ");
                   var telefone = readline.question("Telefone: ");
-                  var msgErro = gerReservas.criaUsuario(nome, endereco, telefone, cpf);
+                  var msgErro = gerReservas.criaUsuario(
+                    nome,
+                    endereco,
+                    telefone,
+                    cpf,
+                  );
                   if (msgErro) console.log("Hospede cadastrado com sucesso!");
                   else console.log("CPF já cadastrado no sistema!");
                 }
-                var quartoEscolhido = readline.questionInt("Numero do quarto: ");
-                if (quartosDisponiveis.find((quarto) => quarto.id === quartoEscolhido)) {
-                  if (gerReservas.criaReserva(dataInicial, dataFinal, quartoEscolhido, cpf)) {
+                var quartoEscolhido =
+                  readline.questionInt("Numero do quarto: ");
+                if (
+                  quartosDisponiveis.find(
+                    (quarto) => quarto.id === quartoEscolhido,
+                  )
+                ) {
+                  if (
+                    gerReservas.criaReserva(
+                      dataInicial,
+                      dataFinal,
+                      quartoEscolhido,
+                      cpf,
+                    )
+                  ) {
                     console.log("Reserva realizada com sucesso!");
                     lacoReserva = false;
                   } else console.error("A reserva nao foi efetuada!");
@@ -211,16 +247,19 @@ while (loop1) {
       // console.log("Quartos solteiro: " + contagem[0]);
       // console.log("Quartos duplo:    " + contagem[1]);
       // console.log("Quartos suite:    " + contagem[2] + "\n");
-      readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
-        // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-        readline.close();
-      });
+      readline.question(
+        "Pressione Enter para voltar ao Menu Principal...",
+        () => {
+          // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+          readline.close();
+        },
+      );
       break;
     case "3":
       console.clear();
       console.log(" =Adicionar/Remover Registros= ");
       console.log("1. Cadastrar novo quarto");
-      console.log("2. Remover registro de quarto"); //possiveis bugs com iD dos quartos
+      console.log("2. Alterar registro de quarto");
       console.log("3. Remover registro de hospede");
       console.log("4. Remover registro de reserva");
       var opcaoAlteracao = readline.question("Escolha a opcao desejada: ");
@@ -229,7 +268,9 @@ while (loop1) {
           console.clear();
           console.log(" =Cadastro de quartos= ");
 
-          var andar = readline.questionInt("Digite o piso do quarto a ser cadastrado: ");
+          var andar = readline.questionInt(
+            "Digite o piso do quarto a ser cadastrado: ",
+          );
           if (andar > andares || andar < 1) {
             console.error("Andar inexistente!");
           } else {
@@ -256,35 +297,106 @@ while (loop1) {
                 console.error("Opcao invalida!");
             } //menu 'cadastro de quartos'
           } //else "andar inexistente"
-          readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
-            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-            readline.close();
-          });
+          readline.question(
+            "Pressione Enter para voltar ao Menu Principal...",
+            () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            },
+          );
           break; //fim do case '1': Cadastrar novo quarto
+        case "2":
+          let aux_quarto = readline.questionInt(
+            "Digite a identificacao do quarto a ser alterado: ",
+          );
+          let quarto = gerQuartos.listaQuartos.find(
+            (quarto) => quarto.id === aux_quarto,
+          );
+          if (quarto) {
+            console.clear();
+            console.log(" =Alterar registro de quarto (#" + aux_quarto + ")= ");
+            console.log("1. Solteiro");
+            console.log("2. Duplo");
+            console.log("3. Suite");
+            console.log("4. Desativado");
+            opcaoEscolhida = readline.questionInt("Escolha a opcao desejada: ");
+            switch (opcaoEscolhida) {
+              case "1":
+                if (alteraQuarto(quarto, "solteiro"))
+                  console.log(
+                    "Quarto #" +
+                      aux_quarto +
+                      " alterado para 'solteiro' com sucesso!",
+                  );
+                break;
+              case "2":
+                if (alteraQuarto(quarto, "duplo"))
+                  console.log(
+                    "Quarto #" +
+                      aux_quarto +
+                      " alterado para 'duplo' com sucesso! ",
+                  );
+                break;
+              case "3":
+                if (alteraQuarto(quarto, "suite"))
+                  console.log(
+                    "Quarto #" +
+                      aux_quarto +
+                      " alterado para 'suite' com sucesso! ",
+                  );
+                break;
+              case "4":
+                if (alteraQuarto(quarto, "desativado"))
+                  console.log(
+                    "Quarto #" + aux_quarto + " desativado com sucesso! ",
+                  );
+              default:
+                console.log("Opcao invalida!");
+            }
+          } else console.error("Quarto nao encontrado!");
+          readline.question(
+            "Pressione Enter para voltar ao Menu Principal...",
+            () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            },
+          );
+          break;
         case "3":
           let aux_cpf = readline.questionInt("Informe o CPF do hospede: ");
-          if (gerReservas.removeUsuario(aux_cpf)) console.log("Hospede removido com sucesso!");
+          if (gerReservas.removeUsuario(aux_cpf))
+            console.log("Hospede removido com sucesso!");
           else console.error("CPF nao cadastrado!");
-          readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
-            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-            readline.close();
-          });
+          readline.question(
+            "Pressione Enter para voltar ao Menu Principal...",
+            () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            },
+          );
           break; //fim do case '3': Remover registro de hospede
         case "4":
           let aux_id = readline.questionInt("Informe o ID da reserva: ");
-          if (gerReservas.removeReserva(aux_id)) console.log("Reserva removida com sucesso!");
+          if (gerReservas.removeReserva(aux_id))
+            console.log("Reserva removida com sucesso!");
           else console.error("ID de reserva nao cadastrado!");
-          readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
-            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-            readline.close();
-          });
+          readline.question(
+            "Pressione Enter para voltar ao Menu Principal...",
+            () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            },
+          );
           break; //fim do case '4': Remover registro de reserva
         default:
           console.error("OPCAO INDISPONIVEL!!!");
-          readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
-            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-            readline.close();
-          });
+          readline.question(
+            "Pressione Enter para voltar ao Menu Principal...",
+            () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            },
+          );
       } //fim do switch =Adicionar/Remover Registros=
       break;
     case "4":

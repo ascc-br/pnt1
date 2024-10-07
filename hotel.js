@@ -58,6 +58,31 @@ class ManipulaQuartos {
 
     return [contagemSolteiro, contagemDuplo, contagemSuite]; // retorna vetor com as 3 contagens
   }
+
+  alteraQuarto(numero, tipo) {
+    var andar = Math.floor((numero - 1) / 100);
+    var quarto = numero - andar * 100;
+
+    switch (tipo) {
+      case "solteiro":
+        diaria = 100;
+        break;
+      case "duplo":
+        diaria = 150;
+        break;
+      case "suite":
+        diaria = 200;
+        break;
+      case "desativado":
+        diaria = 0;
+      default:
+        return false;
+    }
+    this.listaQuartos[andar][quarto - 1].tipo = tipo;
+    this.listaQuartos[andar][quarto - 1].diaria = diaria;
+
+    return true;
+  }
 }
 
 class Hospede {
@@ -122,7 +147,9 @@ class ManipulaReservas {
   listarQuartosDisponiveis(dataInicial, dataFinal, listaDeQuartos) {
     return listaDeQuartos
       .flatMap((andar) => andar)
-      .filter((quarto) => this.checaDisponibilidade(dataInicial, dataFinal, quarto.id));
+      .filter((quarto) => 
+        quarto.tipo !== "desativado" && this.checaDisponibilidade(dataInicial, dataFinal, quarto.id)
+      );
   }
 
   criaReserva(dataInicial, dataFinal, quarto, hospede) {
