@@ -8,12 +8,19 @@ class Quarto {
 }
 
 class ManipulaQuartos {
-  constructor(andares) {
+  constructor(andares, diariaSolteiro, diariaDuplo, diariaSuite) {
     this.listaQuartos = []; // vetor de vetores com lista de quartos por andar
 
     for (let i = 0; i < andares; i++) {
       this.listaQuartos[i] = [];
     }
+
+    if (diariaSolteiro == undefined) this.diaSolteiro = 100;
+    else this.diaSolteiro = diariaSolteiro;
+    if (diariaDuplo == undefined) this.diaDuplo = 150;
+    else this.diaDuplo = diariaDuplo;
+    if (diariaSuite == undefined) this.diaSuite = 200;
+    else this.diaSuite = diariaSuite;
   }
 
   addQuarto(tipo, andar) {
@@ -21,13 +28,13 @@ class ManipulaQuartos {
 
     switch (tipo) {
       case "solteiro":
-        diaria = 100;
+        diaria = this.diaSolteiro;
         break;
       case "duplo":
-        diaria = 150;
+        diaria = this.diaDuplo;
         break;
       case "suite":
-        diaria = 200;
+        diaria = this.diaSuite;
         break;
       default:
         return false;
@@ -59,22 +66,28 @@ class ManipulaQuartos {
     return [contagemSolteiro, contagemDuplo, contagemSuite]; // retorna vetor com as 3 contagens
   }
 
+  quartoExiste(id_busca) {
+    return this.listaQuartos.some((piso) => piso.some((quarto) => quarto.id === id_busca));
+  }
+
   alteraQuarto(numero, tipo) {
     var andar = Math.floor((numero - 1) / 100);
     var quarto = numero - andar * 100;
 
+    let diaria;
     switch (tipo) {
       case "solteiro":
-        diaria = 100;
+        diaria = this.diaSolteiro;
         break;
       case "duplo":
-        diaria = 150;
+        diaria = this.diaDuplo;
         break;
       case "suite":
-        diaria = 200;
+        diaria = this.diaSuite;
         break;
       case "desativado":
-        diaria = 0;
+        diaria = null;
+        break;
       default:
         return false;
     }
@@ -82,6 +95,31 @@ class ManipulaQuartos {
     this.listaQuartos[andar][quarto - 1].diaria = diaria;
 
     return true;
+  }
+
+  atualizaDiarias() {
+    let noErrors = true;
+    this.listaQuartos.forEach((piso) => {
+      piso.forEach((quarto) => {
+        switch (quarto.tipo) {
+          case "solteiro":
+            quarto.diaria = this.diaSolteiro;
+            break;
+          case "duplo":
+            quarto.diaria = this.diaDuplo;
+            break;
+          case "suite":
+            quarto.diaria = this.diaSuite;
+            break;
+          case "desativado":
+            quarto.diaria = null;
+            break;
+          default:
+            noErrors = false;
+        } //fim do switch de tipos
+      }); //fim do forEach para quartos
+    }); //fim do forEach para andares
+    return noErrors;
   }
 }
 
@@ -147,8 +185,10 @@ class ManipulaReservas {
   listarQuartosDisponiveis(dataInicial, dataFinal, listaDeQuartos) {
     return listaDeQuartos
       .flatMap((andar) => andar)
-      .filter((quarto) => 
-        quarto.tipo !== "desativado" && this.checaDisponibilidade(dataInicial, dataFinal, quarto.id)
+      .filter(
+        (quarto) =>
+          quarto.tipo !== "desativado" &&
+          this.checaDisponibilidade(dataInicial, dataFinal, quarto.id)
       );
   }
 
