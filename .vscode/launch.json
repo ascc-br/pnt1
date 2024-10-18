@@ -11,7 +11,10 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "runtimeExecutable": "C:\\Users\\Alfran\\AppData\\Local\\fnm_multishells\\4112_1727384657832\\node.exe"
+      "runtimeExecutable": "C:\\Users\\Alfran\\AppData\\Local\\fnm_multishells\\4112_1727384657832\\node.exe",
+      "env": {
+        "LANG": "en_US.UTF-8"
+      }
     }
   ]
 }
