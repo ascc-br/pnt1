@@ -34,7 +34,6 @@ function mostraPredio(size = 40) {
   }
 
   console.log(
-    bold +
       fgBuilding +
       margem +
       "   ____" +
@@ -46,10 +45,10 @@ function mostraPredio(size = 40) {
       "HOTEL MANAGER" +
       fgBuilding +
       " ]" +
-      resetBg +
-      bold +
+      reset +
+      fgBuilding +
       "____" +
-      reset
+      reset,
   );
   console.log(
     "   " +
@@ -86,10 +85,16 @@ function mostraPredio(size = 40) {
       "▧ " +
       fgBuilding +
       "|" +
-      reset
+      reset,
   );
   console.log(
-    "   " + margem + bold + bgBuilding + fgBuilding + "|....||..||__|| ..||....|" + reset
+    "   " +
+      margem +
+      bold +
+      bgBuilding +
+      fgBuilding +
+      "|....||..||__|| ..||....|" +
+      reset,
   );
   console.log(
     "   " +
@@ -126,7 +131,7 @@ function mostraPredio(size = 40) {
       "▧ " +
       fgBuilding +
       "|" +
-      reset
+      reset,
   );
   console.log(
     fgFloor +
@@ -138,10 +143,11 @@ function mostraPredio(size = 40) {
       "  " +
       bgFloor +
       ",,;;;,;;;,;;;" +
-      resetBg +
+      reset +
+      fgFloor +
       ",," +
       reset +
-      "\n"
+      "\n",
   );
 }
 
@@ -151,7 +157,8 @@ function titleGenerator(title, size = 40) {
   let retorno = "opa";
 
   if (title != undefined) {
-    for (let i = 0; i < (size - 4 - title.length) / 2; i += borda.length) margem += borda;
+    for (let i = 0; i < (size - 4 - title.length) / 2; i += borda.length)
+      margem += borda;
     margem2 = margem;
 
     var tamanhoBruto = margem.length * 2 + title.length + 4;
@@ -189,7 +196,8 @@ function menuLineGenerator(texto, size = 40) {
   let retorno = "opa";
 
   if (texto != undefined) {
-    for (let i = 0; i < (size - texto.length - borda.length * 2) / 2; i++) preenchimento += " ";
+    for (let i = 0; i < (size - texto.length - borda.length * 2) / 2; i++)
+      preenchimento += " ";
 
     retorno =
       styleMenuIni +
@@ -295,10 +303,19 @@ function fitLine(line, size = 40, isTitulo = false) {
 
 function isArrayOfStr(variable) {
   // Verifica se é um array e se todos os elementos são strings
-  return Array.isArray(variable) && variable.every((element) => typeof element === "string");
+  return (
+    Array.isArray(variable) &&
+    variable.every((element) => typeof element === "string")
+  );
 }
 
-function mostraMenu(title, opcoes, recursiva = true, noInput = false, size = 40) {
+function mostraMenu(
+  title,
+  opcoes,
+  recursiva = true,
+  noInput = false,
+  size = 40,
+) {
   var input = 0;
   if (isArrayOfStr(opcoes)) {
     //check if opcoes is an array
@@ -317,7 +334,7 @@ function mostraMenu(title, opcoes, recursiva = true, noInput = false, size = 40)
           fitLine(opcoes[0], size) +
             "\n" +
             titleGenerator(undefined, size) +
-            "\n Digite a informação: "
+            "\n Digite a informação: ",
         );
     } else {
       //parte recursiva (repete se o input é inválido)
@@ -332,14 +349,18 @@ function mostraMenu(title, opcoes, recursiva = true, noInput = false, size = 40)
         }
       console.log(titleGenerator(undefined, size));
       if (!noInput) {
-        input = readline.questionInt("Digite a opção desejada: ", opcoes.length);
+        input = readline.questionInt(
+          "Digite a opção desejada: ",
+          opcoes.length,
+        );
         if (!(input > 0 && input <= opcoes.length)) {
           console.warn("Opção inválida!");
           readline.question("Pressione Enter para continuar...", () => {
             // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
             readline.close();
           });
-          if (recursiva) input = mostraMenu(title, opcoes, recursiva, false, size);
+          if (recursiva)
+            input = mostraMenu(title, opcoes, recursiva, false, size);
         }
       } else input = null;
     }
@@ -387,8 +408,8 @@ function mostraLista(objectArray, page = 0, tittle = null, size = 40) {
               `${index + 1}. NOME:${objectArray[index].nome} CPF:${objectArray[index].id} TEL.:${
                 objectArray[index].telefone
               } END.:${objectArray[index].endereco}`,
-              size
-            )
+              size,
+            ),
           );
         } else break;
       }
@@ -411,13 +432,15 @@ function mostraLista(objectArray, page = 0, tittle = null, size = 40) {
           console.log(
             fitLine(
               `NÚMERO:${objectArray[index].id} TIPO:${objectArray[index].tipo} DIÁRIA:${objectArray[index].diaria}`,
-              size
-            )
+              size,
+            ),
           );
         } else break;
       }
     } //verifica se é um vetor de reservas
-    else if (objectArray.every((element) => element.hasOwnProperty("dataInicial"))) {
+    else if (
+      objectArray.every((element) => element.hasOwnProperty("dataInicial"))
+    ) {
       console.clear();
       if (tittle == null) {
         console.log(fitLine("Reservas de hóspedes", size, true));
@@ -442,8 +465,8 @@ function mostraLista(objectArray, page = 0, tittle = null, size = 40) {
                 objectArray[index].dataInicial.toDateString() +
                 " CHECKOUT:" +
                 objectArray[index].dataFinal.toDateString(),
-              size
-            )
+              size,
+            ),
           );
         } else break;
       }
@@ -454,7 +477,7 @@ function mostraLista(objectArray, page = 0, tittle = null, size = 40) {
 
     console.log(fitLine(`Página ${page + 1} de ${totalPages}`, size, true));
     let input = readline.questionInt(
-      "Digite o número da página a ser exibida ou\ntecle 0(zero) para voltar ao menu anterior: "
+      "Digite o número da página a ser exibida ou\ntecle 0(zero) para voltar ao menu anterior: ",
     );
     if (input === 0) return true;
     else if (input >= 1 && input <= totalPages)
