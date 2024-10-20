@@ -12,17 +12,216 @@ const {
   dataProxReserva,
 } = require("./hotel");
 
+// Function to fill the object arrays with random data
+function randomFill(manipulaQuartos, manipulaReservas, qtdAndares = 1) {
+  if (manipulaQuartos && manipulaReservas) {
+    // Fill ManipulaQuartos with random data
+    for (let i = 0; i < qtdAndares; i++) {
+      andar = i + 1;
+      manipulaQuartos.addQuarto("solteiro", andar);
+      manipulaQuartos.addQuarto("duplo", andar);
+      manipulaQuartos.addQuarto("duplo", andar);
+      manipulaQuartos.addQuarto("suite", andar);
+      manipulaQuartos.addQuarto("suite", andar);
+      manipulaQuartos.addQuarto("suite", andar);
+      manipulaQuartos.addQuarto("suite", andar);
+      manipulaQuartos.addQuarto("duplo", andar);
+      manipulaQuartos.addQuarto("duplo", andar);
+      manipulaQuartos.addQuarto("solteiro", andar);
+    }
+
+    // Fill ManipulaReservas with random data
+    for (let i = 0; i < 300; i++) {
+      const randomData = generateRandomData();
+      manipulaReservas.criaUsuario(
+        randomData.nomeCompleto,
+        randomData.endereço,
+        randomData.telefone,
+        randomData.cpf
+      );
+    }
+
+    for (let i = 0; i < 1000; i++) {
+      const randomDateIn = getRandomFutureDate(new Date(), 7); // Random data in the next week
+      const randomDateOut = getRandomFutureDate(randomDateIn, 35); // data in the future within 4 weeks
+      const listaFlatQuartos = manipulaReservas.listarQuartosDisponiveis(
+        randomDateIn,
+        randomDateOut,
+        manipulaQuartos.listaQuartos
+      );
+      if (listaFlatQuartos.length === 0) continue; // If no available quartos, skip this iteration
+      let randomIndex = Math.floor(Math.random() * listaFlatQuartos.length);
+      const randomQuarto = listaFlatQuartos[randomIndex].id;
+      randomIndex = Math.floor(Math.random() * manipulaReservas.listaUsuarios.length);
+      const randomHospede = manipulaReservas.listaUsuarios[randomIndex].id;
+      manipulaReservas.criaReserva(randomDateIn, randomDateOut, randomQuarto, randomHospede);
+    }
+
+    return true;
+  } else {
+    console.error(
+      "Invalid object arrays. Please provide ManipulaQuartos and ManipulaReservas objects."
+    );
+
+    return false;
+  }
+}
+
+function getRandomFutureDate(startDate, maxDays) {
+  const randomDays = Math.floor(Math.random() * maxDays); // Gera número de dias aleatórios
+  const futureDate = new Date(startDate);
+  futureDate.setDate(futureDate.getDate() + randomDays); // Adiciona dias aleatórios à data inicial
+  return futureDate;
+}
+
+// Function to generate random data
+function generateRandomData() {
+  // Generate random data for ManipulaQuartos
+  const nomes = [
+    "Alice",
+    "Bruno",
+    "Camila",
+    "Daniel",
+    "Eduarda",
+    "Felipe",
+    "Gabriela",
+    "Henrique",
+    "Isabela",
+    "João",
+    "Laura",
+    "Lucas",
+    "Mariana",
+    "Nicolas",
+    "Olivia",
+    "Pedro",
+    "Rafaela",
+    "Samuel",
+    "Thaís",
+    "Victor",
+    "Ana",
+    "Beatriz",
+    "Carlos",
+    "Diana",
+    "Eduardo",
+    "Fernanda",
+    "Gustavo",
+    "Helena",
+    "Igor",
+    "Juliana",
+    "Leonardo",
+    "Maria",
+    "Miguel",
+    "Natália",
+    "Otávio",
+    "Paula",
+    "Rafael",
+    "Sofia",
+    "Thiago",
+    "Valentina",
+    "William",
+    "Amanda",
+    "Bernardo",
+    "Clara",
+    "David",
+    "Emily",
+    "Gabriel",
+    "Heloísa",
+    "Ian",
+    "Júlia",
+    "Luiz",
+    "Melissa",
+    "Noah",
+    "Priscila",
+    "Roberto",
+    "Sophia",
+    "Tomás",
+    "Vitor",
+  ];
+  const sobrenomes = [
+    "Almeida",
+    "Andrade",
+    "Azevedo",
+    "Barbosa",
+    "Brito",
+    "Campos",
+    "Cardoso",
+    "Costa",
+    "Dias",
+    "Ferreira",
+    "Fernandes",
+    "Gomes",
+    "Gonçalves",
+    "Lima",
+    "Machado",
+    "Martins",
+    "Melo",
+    "Mendes",
+    "Miranda",
+    "Moraes",
+    "Moreira",
+    "Oliveira",
+    "Pereira",
+    "Pinto",
+    "Queiroz",
+    "Ramos",
+    "Ribeiro",
+    "Rodrigues",
+    "Santos",
+    "Silva",
+    "Souza",
+    "Teixeira",
+    "Vieira",
+    "Viana",
+    "Xavier",
+    "Alves",
+    "Assis",
+    "Carvalho",
+    "Cavalcante",
+    "Correa",
+    "Freitas",
+    "Garcia",
+    "Lopes",
+    "Marques",
+    "Nogueira",
+    "Pereira",
+    "Reis",
+    "Rosa",
+    "Santos",
+    "Silva",
+    "Soares",
+    "Torres",
+  ];
+
+  // Generate random data for Hospedes
+  const randomNome =
+    nomes[Math.floor(Math.random() * nomes.length)] +
+    " " +
+    sobrenomes[Math.floor(Math.random() * sobrenomes.length)] +
+    " " +
+    sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+  const randomEndereco =
+    ["Rua ", "Avenida ", "Alameda "][Math.floor(Math.random() * 3)] +
+    sobrenomes[Math.floor(Math.random() * sobrenomes.length)] +
+    " de " +
+    sobrenomes[Math.floor(Math.random() * sobrenomes.length)] +
+    ", " +
+    Math.floor(Math.random() * 998) +
+    1;
+  1;
+  const randomCpf = Math.floor(Math.random() * 10000000000) + 1000000000; // Random CPF between 1000000000 and 10099999999
+  const randomTelefone = Math.floor(Math.random() * 1000000000) + 100000000; // Random telefone between 100000000 and 999999999
+
+  return {
+    nomeCompleto: randomNome,
+    endereço: randomEndereco,
+    telefone: randomTelefone,
+    cpf: randomCpf,
+  };
+}
+
 /** INTERFACE GRAFICA (FRONT) */
 //styles
-const {
-  styleMenuIni,
-  styleMenuEnd,
-  mostraPredio,
-  mostraMenu,
-  titleGenerator,
-  readline,
-  fitLine,
-} = require("./frontend");
+const { mostraMenu, mostraLista, readline } = require("./frontend");
 
 var lacoAndares = true;
 while (lacoAndares) {
@@ -37,10 +236,25 @@ while (lacoAndares) {
     });
   } else lacoAndares = false;
 }
-
 const andares = auxAndares;
 const gerQuartos = new ManipulaQuartos(andares);
 const gerReservas = new ManipulaReservas();
+
+var auxAutofill = mostraMenu("Deseja preencher automaticamente os dados?", ["Sim", "Não"]);
+if (auxAutofill !== 1 && auxAutofill !== 2) {
+  console.error("Digite um valor válido!");
+  readline.question("Pressione Enter para continuar...", () => {
+    // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+    readline.close();
+  });
+} else if (auxAutofill === 1) {
+  if (randomFill(gerQuartos, gerReservas, andares)) console.log("Dados preenchidos com sucesso!");
+  else console.error("Erro ao preencher dados!");
+  readline.question("Pressione Enter para continuar...", () => {
+    // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+    readline.close();
+  });
+}
 
 var loop1 = true;
 while (loop1) {
@@ -143,28 +357,20 @@ while (loop1) {
 
             switch (opcaoReserva) {
               case 1:
-                menuQuartos = [];
-                quartosDisponiveis.forEach((quarto) => {
-                  menuQuartos.push(" #" + quarto.id + " (" + quarto.tipo + ")");
-                });
-                mostraMenu(
-                  "===Quartos disponíveis=== (" + dataIniInput + " ~ " + dataFinInput + ")",
-                  menuQuartos,
-                  true,
-                  false,
-                  true
-                );
-
-                readline.question("Pressione Enter para continuar...", () => {
-                  // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-                  readline.close();
-                });
+                if (
+                  !mostraLista(
+                    quartosDisponiveis,
+                    0,
+                    "===Quartos disponíveis=== (" + dataIniInput + " ~ " + dataFinInput + ")"
+                  )
+                ) {
+                  console.error("Não foi possível exibir os quartos disponíveis!");
+                }
                 break;
               case 2:
                 mostraMenu(
                   "======Fazer Reserva====== (" + dataIniInput + " ~ " + dataFinInput + ")",
                   ["Qual quarto será reservado?"],
-                  true,
                   false,
                   true
                 );
@@ -184,7 +390,6 @@ while (loop1) {
                       selectedQuarto.tipo +
                       ")",
                     ["Favor informe os dados do hóspede"],
-                    true,
                     false,
                     true
                   );
@@ -213,7 +418,6 @@ while (loop1) {
                           "Endereço: " + endereco,
                           "telefone: " + telefone,
                         ],
-                        true,
                         false,
                         true
                       );
@@ -257,19 +461,25 @@ while (loop1) {
 
       switch (opcaoRegistros) {
         case 1:
-          console.log(" =Quartos cadastrados= ");
-          console.log(gerQuartos.listaQuartos);
-          //mostraMenu("Quartos cadastrados", gerQuartos.listaQuartos);
+          // console.log(" =Quartos cadastrados= ");
+          // console.log(gerQuartos.listaQuartos);
+          if (!mostraLista(gerQuartos.listaQuartos.flat())) {
+            console.warn("Não foi possível exibir os registros de quartos!");
+          }
           break;
         case 2:
-          console.log(" =Hóspedes cadastrados= ");
-          console.log(gerReservas.listaUsuarios);
-          // mostraMenu("Hóspedes cadastrados", gerReservas.listaUsuarios);
+          // console.log(" =Hóspedes cadastrados= ");
+          // console.log(gerReservas.listaUsuarios);
+          if (!mostraLista(gerReservas.listaUsuarios)) {
+            console.warn("Nenhum hóspede cadastrado!");
+          }
           break;
         case 3:
-          console.log(" =Reservas cadastradas= ");
-          console.log(gerReservas.listaReservas);
-          // mostraMenu("Reservas", gerReservas.listaReservas);
+          // console.log(" =Reservas cadastradas= ");
+          // console.log(gerReservas.listaReservas);
+          if (!mostraLista(gerReservas.listaReservas)) {
+            console.warn("Não foi possível exibir os registros de reservas!");
+          }
           break;
         case 4:
           break;
@@ -372,7 +582,6 @@ while (loop1) {
             mostraMenu(
               "Alterar valor das diárias",
               ["Atual valor para quarto 'solteiro': " + gerQuartos.diaSolteiro],
-              true,
               false,
               true
             );
@@ -388,7 +597,6 @@ while (loop1) {
                 "NOVO valor para 'solteiro': " + gerQuartos.diaSolteiro,
                 "Atual valor para 'duplo': " + gerQuartos.diaDuplo,
               ],
-              true,
               false,
               true
             );
@@ -405,7 +613,6 @@ while (loop1) {
                 "NOVO valor para 'duplo': " + gerQuartos.diaDuplo,
                 "Atual valor para 'suíte': " + gerQuartos.diaSuite,
               ],
-              true,
               false,
               true
             );
@@ -421,7 +628,6 @@ while (loop1) {
                 "NOVO valor para quarto 'duplo': " + gerQuartos.diaDuplo,
                 "NOVO valor para quarto 'suíte': " + gerQuartos.diaSuite,
               ],
-              true,
               false,
               true
             );
