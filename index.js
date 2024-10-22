@@ -544,20 +544,49 @@ while (loop1) {
             );
             switch (opcaoEscolhida) {
               case 1:
-                if (gerQuartos.alteraQuarto(aux_quarto, "solteiro"))
-                  console.log("Quarto #" + aux_quarto + " alterado para 'solteiro' com sucesso!");
+                switch (
+                  gerQuartos.alteraQuarto(aux_quarto, "solteiro", gerReservas.listaReservas)
+                ) {
+                  case 1:
+                    console.log("Quarto #" + aux_quarto + " alterado para 'solteiro' com sucesso!");
+                    break;
+                  case 0:
+                    console.error("Não foi possível alterar o quarto com reserva!");
+                    break;
+                  default:
+                    console.error("Não foi possível alterar o quarto!");
+                }
                 break;
               case 2:
-                if (gerQuartos.alteraQuarto(aux_quarto, "duplo"))
-                  console.log("Quarto #" + aux_quarto + " alterado para 'duplo' com sucesso! ");
+                switch (gerQuartos.alteraQuarto(aux_quarto, "duplo", gerReservas.listaReservas)) {
+                  case 1:
+                    console.log("Quarto #" + aux_quarto + " alterado para 'duplo' com sucesso! ");
+                    break;
+                  case 0:
+                    console.error("Não foi possível alterar o quarto com reserva!");
+                    break;
+                  default:
+                    console.error("Não foi possível alterar o quarto!");
+                }
                 break;
               case 3:
-                if (gerQuartos.alteraQuarto(aux_quarto, "suite"))
+                if (gerQuartos.alteraQuarto(aux_quarto, "suite") == 1)
                   console.log("Quarto #" + aux_quarto + " alterado para 'suíte' com sucesso! ");
+                else console.error("Não foi possível alterar o quarto!");
                 break;
               case 4:
-                if (gerQuartos.alteraQuarto(aux_quarto, "desativado"))
-                  console.log("Quarto #" + aux_quarto + " desativado com sucesso! ");
+                switch (
+                  gerQuartos.alteraQuarto(aux_quarto, "desativado", gerReservas.listaReservas)
+                ) {
+                  case 1:
+                    console.log("Quarto #" + aux_quarto + " desativado com sucesso! ");
+                    break;
+                  case 0:
+                    console.error("Não foi possível alterar o quarto com reserva!");
+                    break;
+                  default:
+                    console.error("Não foi possível alterar o quarto!");
+                }
                 break;
               case 5:
                 break;
@@ -568,8 +597,19 @@ while (loop1) {
           break;
         case 3:
           let aux_cpf = mostraMenu("Remover registro de hóspede", ["Qual o CPF do hóspede?"]);
-          if (gerReservas.removeUsuario(aux_cpf)) console.log("Hóspede removido com sucesso!");
-          else console.error("CPF não cadastrado!");
+          switch (gerReservas.removeUsuario(parseInt(aux_cpf))) {
+            case 1:
+              console.log("Cadastro removido com sucesso!");
+              break;
+            case 0:
+              console.error("Não é possível remover cadastro de hóspede com Reserva!");
+              break;
+            case -1:
+              console.error("CPF não cadastrado!");
+              break;
+            default:
+              console.error("Não foi possível remover o cadastro do hóspede!");
+          }
           break; //fim do case '3': Remover registro de hóspede
         case 4:
           let aux_id = mostraMenu("Remover registro de reserva", ["Qual o ID da reserva?"]);

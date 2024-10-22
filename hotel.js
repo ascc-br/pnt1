@@ -70,31 +70,52 @@ class ManipulaQuartos {
     return this.listaQuartos.some((piso) => piso.some((quarto) => quarto.id === id_busca));
   }
 
-  alteraQuarto(numero, tipo) {
-    var andar = Math.floor((numero - 1) / 100);
-    var quarto = numero - andar * 100;
+  alteraQuarto(numero, tipo, arrayReservas = null) {
+    const andar = Math.floor((numero - 1) / 100);
+    const quarto = numero - andar * 100;
+    const antigoTipo = this.listaQuartos[andar][quarto - 1].tipo;
 
     let diaria;
     switch (tipo) {
       case "solteiro":
-        diaria = this.diaSolteiro;
+        if (
+          arrayReservas !== null &&
+          arrayReservas.every((element) => element.hasOwnProperty("idQuarto")) &&
+          arrayReservas.find((element) => element.idQuarto === numero) &&
+          (antigoTipo === "duplo" || antigoTipo === "suite")
+        ) {
+          return 0;
+        } else diaria = this.diaSolteiro;
         break;
       case "duplo":
-        diaria = this.diaDuplo;
+        if (
+          arrayReservas !== null &&
+          arrayReservas.every((element) => element.hasOwnProperty("idQuarto")) &&
+          arrayReservas.find((element) => element.idQuarto === numero) &&
+          antigoTipo === "suite"
+        ) {
+          return 0;
+        } else diaria = this.diaDuplo;
         break;
       case "suite":
         diaria = this.diaSuite;
         break;
       case "desativado":
-        diaria = null;
+        if (
+          arrayReservas !== null &&
+          arrayReservas.every((element) => element.hasOwnProperty("idQuarto")) &&
+          arrayReservas.find((element) => element.idQuarto === numero)
+        ) {
+          return 0;
+        } else diaria = null;
         break;
       default:
-        return false;
+        return -1;
     }
     this.listaQuartos[andar][quarto - 1].tipo = tipo;
     this.listaQuartos[andar][quarto - 1].diaria = diaria;
 
-    return true;
+    return 1;
   }
 
   atualizaDiarias() {
@@ -154,7 +175,7 @@ class ManipulaReservas {
   }
 
   criaUsuario(nome, endereco, telefone, cpf) {
-    if (this.listaUsuarios.find((usuario) => usuario.cpf === cpf)) return false;
+    if (this.listaUsuarios.find((usuario) => usuario.id === cpf)) return false;
     const usuario = new Hospede(nome, endereco, telefone, cpf);
     this.listaUsuarios.push(usuario);
     return true;
@@ -164,12 +185,16 @@ class ManipulaReservas {
     // Encontra o índice do objeto com o id fornecido
     const index = this.listaUsuarios.findIndex((obj) => obj.id === id);
 
-    // Se o índice for encontrado, remove o objeto do array
+    // Se o índice for encontrado e não estiver em reserva, remove o objeto do array
     if (index !== -1) {
-      this.listaUsuarios.splice(index, 1); // Remove 1 item na posição index
-      return true; // Retorna true se o objeto foi removido com sucesso
+      if (this.listaReservas.find((obj) => obj.idHospede === id))
+        return 0; //retorna 0 se o usuario está em uma reserva
+      else {
+        this.listaUsuarios.splice(index, 1); // Remove 1 item na posição index
+        return 1; // Retorna 1 se o objeto foi removido com sucesso
+      }
     } else {
-      return false; // Retorna false se o objeto não foi encontrado
+      return -1; // Retorna -1 se o objeto não foi encontrado
     }
   }
 
