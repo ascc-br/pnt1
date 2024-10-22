@@ -203,7 +203,9 @@ class ManipulaReservas {
       (reserva) =>
         reserva.idQuarto === quarto &&
         ((reserva.dataInicial <= dataInicial && reserva.dataFinal >= dataInicial) ||
-          (reserva.dataInicial <= dataFinal && reserva.dataFinal >= dataFinal))
+          (reserva.dataInicial <= dataFinal && reserva.dataFinal >= dataFinal) ||
+          (reserva.dataInicial >= dataInicial && reserva.dataInicial <= dataFinal) ||
+          (reserva.dataFinal >= dataInicial && reserva.dataFinal <= dataFinal))
     );
   }
 
