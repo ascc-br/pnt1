@@ -258,30 +258,6 @@ if (auxAutofill !== 1 && auxAutofill !== 2) {
 
 var loop1 = true;
 while (loop1) {
-  /** Mapa de Menus:
-   * 1. Fazer Reserva
-   *  1.1 Quartos disponíveis na data
-   *  1.2 Reservar quarto em data (usando CPF e cadastrando caso novo hóspede)
-   *  1.3 Voltar ao Menu Principal
-   * 2. Registros do Sistema
-   *  2.1 Listar reservas por CPF
-   *  2.2 Listar quartos cadastrados
-   *  2.3 Listar hóspedes cadastrados
-   *  2.4 Listar reservas cadastradas
-   * 3. Alterar Registros
-   *  3.1 Cadastrar novo quarto
-   *   3.1.1 solteiro
-   *   3.1.2 duplo
-   *   3.1.3 suíte
-   *  3.2 Alterar registro de quarto
-   *   3.2.1 Solteiro
-   *   3.2.2 duplo
-   *   3.2.3 suíte
-   *   3.2.4 DESATIVADO
-   *  3.3 Deletar registro de hóspede
-   *  3.4 Deletar registro de reserva
-   * 4. Sair
-   */
   let menu1 = ["Fazer Reserva", "Registros do Sistema", "Modificar Registros", "Sair"];
   var opcaoEscolhida = mostraMenu("Menu Principal", menu1);
 
@@ -465,6 +441,10 @@ while (loop1) {
           // console.log(gerQuartos.listaQuartos);
           if (!mostraLista(gerQuartos.listaQuartos.flat())) {
             console.warn("Não foi possível exibir os registros de quartos!");
+            readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            });
           }
           break;
         case 2:
@@ -472,6 +452,10 @@ while (loop1) {
           // console.log(gerReservas.listaUsuarios);
           if (!mostraLista(gerReservas.listaUsuarios)) {
             console.warn("Nenhum hóspede cadastrado!");
+            readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            });
           }
           break;
         case 3:
@@ -479,24 +463,28 @@ while (loop1) {
           // console.log(gerReservas.listaReservas);
           if (!mostraLista(gerReservas.listaReservas)) {
             console.warn("Não foi possível exibir os registros de reservas!");
+            readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
+              // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+              readline.close();
+            });
           }
           break;
         case 4:
           break;
         default:
           console.error("Opção inválida!");
+          readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
+            // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+            readline.close();
+          });
       }
-      readline.question("Pressione Enter para voltar ao Menu Principal...", () => {
-        // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
-        readline.close();
-      });
       break;
     case 3:
       let menuModidificar = [
         "Cadastrar novo quarto",
         "Registro de quarto",
         "Apagar reg de hóspede",
-        "Apagar reg de reserva",
+        "Apagar reg de reservas",
         "Valor das diárias",
         "Voltar ao Menu Principal",
       ];
@@ -612,9 +600,164 @@ while (loop1) {
           }
           break; //fim do case '3': Remover registro de hóspede
         case 4:
-          let aux_id = mostraMenu("Remover registro de reserva", ["Qual o ID da reserva?"]);
-          if (gerReservas.removeReserva(aux_id)) console.log("Reserva removida com sucesso!");
-          else console.error("ID de reserva não cadastrado!");
+          let buscaReservas = [];
+          let opcaoBuscaReservas = mostraMenu("Remover Reservas", [
+            "Remover reserva por ID",
+            "Filtrar por Quarto",
+            "Filtrar por Hóspede",
+            "CANCELAR",
+          ]);
+          switch (opcaoBuscaReservas) {
+            case 1:
+              let aux_id = parseInt(
+                mostraMenu("Remover reserva por ID", ["Qual o ID da reserva?"])
+              );
+              switch (gerReservas.removeReserva(aux_id)) {
+                case true:
+                  console.log("Reserva removida com sucesso!");
+                  break;
+                case false:
+                  console.error("ID de reserva não encontrado!");
+                  break;
+                default:
+                  console.error("Não foi possível remover a reserva!");
+              }
+              break;
+            case 2:
+              let aux_quarto = parseInt(
+                mostraMenu("Buscar reservas por quarto", ["Qual o número do quarto?"])
+              );
+              buscaReservas = gerReservas.buscaReservas(aux_quarto);
+              if (buscaReservas.length < 1) {
+                console.error("Não há reservas para esse quarto!");
+                break;
+              }
+              let lacoReservasPorQuarto = true;
+              while (lacoReservasPorQuarto) {
+                let opcaoBuscaPorQuarto = mostraMenu(
+                  `====Reservas filtradas===  por quarto (#${aux_quarto})`,
+                  [
+                    "Listar reservas filtradas",
+                    "Remover reservas filtradas",
+                    "Voltar ao Menu Principal",
+                  ]
+                );
+                switch (opcaoBuscaPorQuarto) {
+                  case 1:
+                    mostraLista(buscaReservas, 0, "Reservas no quarto #" + aux_quarto);
+                    break;
+                  case 2:
+                    let validation = readline.question(
+                      `Você tem certeza que deseja excluir ${buscaReservas.length} reservas? `
+                    );
+                    if (
+                      validation.toLowerCase() === "sim" ||
+                      validation.toLowerCase() === "yes" ||
+                      validation.toLowerCase() === "tenho" ||
+                      validation.toLowerCase() === "s" ||
+                      validation.toLowerCase() === "y" ||
+                      validation == 1
+                    ) {
+                      for (let i = 0; i < buscaReservas.length; i++) {
+                        if (gerReservas.removeReserva(buscaReservas[i].id))
+                          console.log(`Reserva #${buscaReservas[i].id} removida com sucesso!`);
+                        else
+                          console.error(
+                            `Não foi possível remover a reserva #${buscaReservas[i].id}!`
+                          );
+                      }
+                      lacoReservasPorQuarto = false;
+                    } else {
+                      console.log("Operação cancelada!");
+                      readline.question("Pressione Enter para continuar...", () => {
+                        // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+                        readline.close();
+                      });
+                    }
+                    break;
+                  case 3:
+                    lacoReservasPorQuarto = false;
+                    break;
+                  default:
+                    console.error("Opção inválida!");
+                    readline.question("Pressione Enter para continuar...", () => {
+                      // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+                      readline.close();
+                    });
+                }
+              }
+
+              break;
+            case 3:
+              let aux_cpf = parseInt(
+                mostraMenu("Buscar reservas por hóspede", ["Qual o CPF do hóspede?"])
+              );
+              buscaReservas = gerReservas.buscaReservas(aux_cpf, true);
+              if (buscaReservas.length < 1) {
+                console.error("Não há reservas nesse CPF!");
+                break;
+              }
+
+              let lacoReservasPorHospede = true;
+              while (lacoReservasPorHospede) {
+                let opcaoBuscaPorCPF = mostraMenu(
+                  `====Reservas filtradas=== por hóspede (CPF:${aux_cpf})`,
+                  [
+                    "Listar reservas filtradas",
+                    "Remover reservas filtradas",
+                    "Voltar ao Menu Principal",
+                  ]
+                );
+                switch (opcaoBuscaPorCPF) {
+                  case 1:
+                    mostraLista(buscaReservas, 0, "Reservas no CPF: " + aux_cpf);
+                    break;
+                  case 2:
+                    let validation = readline.question(
+                      `Você tem certeza que deseja excluir ${buscaReservas.length} reservas? `
+                    );
+                    if (
+                      validation.toLowerCase() === "sim" ||
+                      validation.toLowerCase() === "yes" ||
+                      validation.toLowerCase() === "tenho" ||
+                      validation.toLowerCase() === "s" ||
+                      validation.toLowerCase() === "y" ||
+                      validation == 1
+                    ) {
+                      for (let i = 0; i < buscaReservas.length; i++) {
+                        if (gerReservas.removeReserva(buscaReservas[i].id))
+                          console.log(`Reserva #${buscaReservas[i].id} removida com sucesso!`);
+                        else
+                          console.error(
+                            `Não foi possível remover a reserva #${buscaReservas[i].id}!`
+                          );
+                      }
+                      lacoReservasPorHospede = false;
+                    } else {
+                      console.log("Operação cancelada!");
+                      readline.question("Pressione Enter para continuar...", () => {
+                        // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+                        readline.close();
+                      });
+                    }
+                    break;
+                  case 3:
+                    lacoReservasPorHospede = false;
+                    break;
+                  default:
+                    console.error("Opção inválida!");
+                    readline.question("Pressione Enter para continuar...", () => {
+                      // Aguarda o usuario pressionar 'ENTER' para então limpar a tela
+                      readline.close();
+                    });
+                }
+              }
+              break;
+            case 4:
+              break;
+            default:
+              console.error("Opção inválida!");
+          }
           break; //fim do case '4': Remover registro de reserva
         case 5:
           let aux_diariaSol = gerQuartos.diaSolteiro;

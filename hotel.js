@@ -219,6 +219,14 @@ class ManipulaReservas {
       );
   }
 
+  buscaReservas(filtro, isCPF = false) {
+    if (isCPF) {
+      return this.listaReservas.filter((reserva) => reserva.idHospede === filtro);
+    } else {
+      return this.listaReservas.filter((reserva) => reserva.idQuarto === filtro);
+    }
+  }
+
   criaReserva(dataInicial, dataFinal, quarto, hospede) {
     if (!this.checaDisponibilidade(dataInicial, dataFinal, quarto)) return false;
     const reserva = new Reserva(dataInicial, dataFinal, quarto, hospede);
