@@ -240,7 +240,7 @@ const andares = auxAndares;
 const gerQuartos = new ManipulaQuartos(andares);
 const gerReservas = new ManipulaReservas();
 
-var auxAutofill = mostraMenu("Deseja preencher automaticamente os dados?", ["Sim", "Não"]);
+var auxAutofill = mostraMenu("Deseja preencher com Modo Demonstração?", ["Sim", "Não"]);
 if (auxAutofill !== 1 && auxAutofill !== 2) {
   console.error("Digite um valor válido!");
   readline.question("Pressione Enter para continuar...", () => {
